@@ -1,0 +1,13 @@
+# Ignore compiled C/C++ binaries
+*.out
+*.exe
+*.o
+*.a
+*.so
+*.dll
+*.dylib
+*.obj
+*.elf
+
+# Ignore .vscode folder
+.vscode/
