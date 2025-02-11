@@ -5,3 +5,7 @@ Week 1 (January 13th-January 19th):
 Week 2 (January 20th-January 26th):
 -January 23rd, emailed to ask for output order clarification for assignment 1, 
     because order was different between instructions and sample output
+
+Week 4 (Feb 3rd - Feb 9th)
+-Feb 6th, emailed to ask about assignment 2 language requirements. Clarified that the use of C++ is allowed as long as the 
+    C pthread library is solely used for multithreading
