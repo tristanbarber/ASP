@@ -9,3 +9,7 @@ Week 2 (January 20th-January 26th):
 Week 4 (Feb 3rd - Feb 9th)
 -Feb 6th, emailed to ask about assignment 2 language requirements. Clarified that the use of C++ is allowed as long as the 
     C pthread library is solely used for multithreading
+
+Week 6 (Feb 17th - Feb 23rd)
+-Feb 17th, emailed about a question regarding q2 on activity 2. Was wondering if there was a potential error condition if t1
+    finished before t2 was able to join it.
