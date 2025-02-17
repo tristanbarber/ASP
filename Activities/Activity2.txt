@@ -1,0 +1,43 @@
+# Question 1
+
+The answer is D.
+
+This is because the main thread must terminate last as it waits on the other threads using pthread_join
+
+##############################################################################################################
+
+# Question 2
+
+The answer is C. 
+
+The main thread waits on p2, and p2, waits on p1. So the exit order must be p1, followed by p2, followed by the main thread.
+The question does not provide us with enough info to determine if t5 < t6 or vice versa, so the only valid answer is C where 
+main exits at t7.
+
+##############################################################################################################
+
+# Question 3
+
+There is a data race, because done is being evaluated outside of a critical section in thread 2. Thread 2 should first
+acquire the mutex and then check the value of done.
+
+As a result, thread 1 could update done to 1 and signal the &cond, while thread 2 evaluates the done == 0 to false. In This
+situation, thread 2 misses wake up signal and will spin forever.
+
+##############################################################################################################
+
+# Question 4
+
+B, E, F 
+
+To thread safely exit, use pthread_exit instead of exit or return
+
+##############################################################################################################
+
+# Question 5
+
+C, D, F 
+
+A and B don't work because of the single cond (instead of full and empty). E doesn't work because it checks numItems outside
+of the critical region.
+
