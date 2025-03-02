@@ -19,7 +19,6 @@ typedef struct reducer_t {
     vector<string> buffer;
 } reducer_t;
 
-// Updated thread_buffer_push
 void thread_buffer_push(reducer_t *red, const string &buf) {
     pthread_mutex_lock(&red->lock);
 
@@ -57,7 +56,7 @@ void thread_buffer_pop(reducer_t *red, string &buf) {
 
 void printUserdata(const string &id, const vector<pair<string, int>> &data) {
     for (const auto &entry : data) {
-        printf("(%s,%s,%d)\n", id.c_str(), entry.first.c_str(), entry.second);
+        printf("(%04d,%s,%d)\n", std::stoi(id), entry.first.c_str(), entry.second);
     }
 }
 
@@ -127,9 +126,9 @@ int main(int argc, char **argv) {
         pthread_cond_init(&reducers[i].empty, NULL);
 
         reducers[i].consumer_id = -1;
-        reducers[i].depth = buffer_depth;  // Set the buffer depth to the correct value
+        reducers[i].depth = buffer_depth;
         reducers[i].idx = 0;
-        reducers[i].buffer.reserve(buffer_depth);  // Reserve space in the vector
+        reducers[i].buffer.reserve(buffer_depth);
 
         if (pthread_create(&threads[i], NULL, reducer, &reducers[i]) != 0) {
             perror("pthread_create failed");
@@ -179,7 +178,7 @@ int main(int argc, char **argv) {
         }
 
         buf = "";
-        string mapper_output = "(" + id + "," + topic + "," + to_string(score) + ")\n";
+        string mapper_output = "(" + id + "," + topic + "," + to_string(score) + ")";
 
         // Find the reducer thread to send data to based on user id
         int reducer_idx = 0;
