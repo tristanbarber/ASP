@@ -13,3 +13,8 @@ Week 4 (Feb 3rd - Feb 9th)
 Week 6 (Feb 17th - Feb 23rd)
 -Feb 17th, emailed about a question regarding q2 on activity 2. Was wondering if there was a potential error condition if t1
     finished before t2 was able to join it.
+
+Week 8 (March 3rd - March 9th)
+-March 6th, emailed asking for clarification about boundary cases for file mapping using mmap. Wanted to know if a full page
+    (ex 4096) bytes would be allocated if you attempted to allcate < 4096 bytes, or if the boundary case of full page allocation
+    was only applicable to allocations > 1 full page
