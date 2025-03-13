@@ -1,1 +1,0 @@
-savedcmd_/home/tridyo43/workspace/ASP/Activities/Activity3/Module.symvers :=  scripts/mod/modpost -M -m -a      -o /home/tridyo43/workspace/ASP/Activities/Activity3/Module.symvers -T /home/tridyo43/workspace/ASP/Activities/Activity3/modules.order -i Module.symvers -e 
