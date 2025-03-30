@@ -1,14 +1,14 @@
 Week 1 (January 13th-January 19th):
--January 15th, emailed to ask for clarification on coding language for preliminary assignment
--January 15th, emailed for clarification about which resources are created per process and which resources processes share
+-January 15th, emailed to ask for clarification on coding language for preliminary assignment.
+-January 15th, emailed for clarification about which resources are created per process and which resources processes share.
 
 Week 2 (January 20th-January 26th):
 -January 23rd, emailed to ask for output order clarification for assignment 1, 
-    because order was different between instructions and sample output
+    because order was different between instructions and sample output.
 
 Week 4 (Feb 3rd - Feb 9th)
 -Feb 6th, emailed to ask about assignment 2 language requirements. Clarified that the use of C++ is allowed as long as the 
-    C pthread library is solely used for multithreading
+    C pthread library is solely used for multithreading.
 
 Week 6 (Feb 17th - Feb 23rd)
 -Feb 17th, emailed about a question regarding q2 on activity 2. Was wondering if there was a potential error condition if t1
@@ -17,4 +17,13 @@ Week 6 (Feb 17th - Feb 23rd)
 Week 8 (March 3rd - March 9th)
 -March 6th, emailed asking for clarification about boundary cases for file mapping using mmap. Wanted to know if a full page
     (ex 4096) bytes would be allocated if you attempted to allcate < 4096 bytes, or if the boundary case of full page allocation
-    was only applicable to allocations > 1 full page
+    was only applicable to allocations > 1 full page.
+-March 9th, emailed asking about whether or not EDGE students needed to do anything regarding the missing "Exam 1 (On Campus) assignment.
+
+Week 9 (March 10th - March 16th)
+-March 13th, emailed asking what the final exam schedule will be for EDGE students. Confirmed that the final will be evening time, same 
+    day as in-person final.
+
+Week 11 (March 24th - March 30th)
+-March 29th, emailed asking for clarification about what the container_of macro was doing in the scull driver, because I was confused
+    about what exactly the process was regarding the custom device structure.
