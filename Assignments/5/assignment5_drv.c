@@ -11,7 +11,7 @@
 
 #define MYDEV_NAME "mycdev"
 #define RAMDISK_SIZE (size_t) (16*PAGE_SIZE)
-#define CDRV_IOC_MAGIC 'X'
+#define CDRV_IOC_MAGIC 'Z'
 #define ASP_CLEAR_BUF _IO(CDRV_IOC_MAGIC, 1)
 
 struct asp_mycdev {
@@ -20,7 +20,7 @@ struct asp_mycdev {
     size_t ramdisk_size; // added this to allow copying of functions from tuxdrv.c
     struct semaphore sem;
     int devNo;
-}
+};
 
 // params
 static int majorno = 500, minorno = 0;
@@ -32,7 +32,7 @@ module_param(numdevices, int, S_IRUGO);
 
 // global pointers for multiple driver implementation
 static struct asp_mycdev *devices;
-static struct class *device_nodes;
+static struct class *device_node_class;
 
 static ssize_t mycdev_read(struct file *file, char __user *buf, size_t lbuf, loff_t *ppos)
 {
@@ -48,6 +48,7 @@ static ssize_t mycdev_read(struct file *file, char __user *buf, size_t lbuf, lof
 	if ((lbuf + *ppos) > dev->ramdisk_size) {
 		pr_info("trying to read past end of device,"
 			"aborting because this is just a stub!\n");
+        up(&dev->sem);
 		return 0;
 	}
 	nbytes = lbuf - copy_to_user(buf, dev->ramdisk + *ppos, lbuf);
@@ -65,13 +66,15 @@ static ssize_t mycdev_write(struct file *file, const char __user *buf, size_t lb
     struct asp_mycdev *dev = file->private_data;
 
     // enter critical region
-    if (down_interruptible(&dev->sem))
+    if (down_interruptible(&dev->sem)) {
         return -ERESTARTSYS;
+    }
 
 	int nbytes;
 	if ((lbuf + *ppos) > dev->ramdisk_size) {
 		pr_info("trying to read past end of device,"
 			"aborting because this is just a stub!\n");
+        up(&dev->sem);
 		return 0;
 	}
 	nbytes = lbuf - copy_from_user(dev->ramdisk + *ppos, buf, lbuf);
@@ -85,7 +88,7 @@ static ssize_t mycdev_write(struct file *file, const char __user *buf, size_t lb
 
 static int mycdev_open(struct inode *inode, struct file *file)
 {
-    struct ASP_mycdev *dev = container_of(inode->i_cdev, struct ASP_mycdev, cdev);
+    struct asp_mycdev *dev = container_of(inode->i_cdev, struct asp_mycdev, dev);
     file->private_data = dev;
     pr_info("OPEN: %s%d:\n", MYDEV_NAME, dev->devNo);
     return 0;
@@ -93,14 +96,14 @@ static int mycdev_open(struct inode *inode, struct file *file)
 
 static int mycdev_release(struct inode *inode, struct file *file)
 {
-    struct ASP_mycdev *dev = file->private_data;
+    struct asp_mycdev *dev = file->private_data;
     pr_info("RELEASE: %s%d:\n\n", MYDEV_NAME, dev->devNo);
     return 0;
 }
 
-static loff_t mycdev_llseek(struct file *file, loff_t off, unsigned int whence)
+static loff_t mycdev_llseek(struct file *file, loff_t off, int whence)
 {
-    struct ASP_mycdev *dev = file->private_data;
+    struct asp_mycdev *dev = file->private_data;
     loff_t newpos;
 
     // enter critical region
@@ -158,7 +161,7 @@ static long mycdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
     if (_IOC_TYPE(cmd) != CDRV_IOC_MAGIC) 
         return -ENOTTY;
     
-    struct ASP_mycdev *dev = file->private_data;
+    struct asp_mycdev *dev = file->private_data;
 
     // enter critical region
     if (down_interruptible(&dev->sem))
@@ -193,22 +196,37 @@ static const struct file_operations mycdev_fops = {
 
 static int __init my_init(void)
 {
-	ramdisk = kmalloc(ramdisk_size, GFP_KERNEL);
-	first = MKDEV(my_major, my_minor);
-	register_chrdev_region(first, count, MYDEV_NAME);
-	my_cdev = cdev_alloc();
-	cdev_init(my_cdev, &mycdev_fops);
-	cdev_add(my_cdev, first, count);
-	pr_info("\nTristan Barber: Succeeded in registering character device %s\n", MYDEV_NAME);
+    devices = (struct asp_mycdev *)kcalloc(sizeof(struct asp_mycdev), numdevices, GFP_KERNEL);    
+	register_chrdev_region(MKDEV(majorno, minorno), numdevices, MYDEV_NAME);
+	device_node_class = class_create("asp_mycdev");
+
+    for(int i = 0; i < numdevices; i++) {
+        devices[i].devNo = i + minorno;
+        devices[i].ramdisk = (char *)kcalloc(1, size, GFP_KERNEL);
+        devices[i].ramdisk_size = size;
+        sema_init(&devices[i].sem, 1);
+        cdev_init(&devices[i].dev, &mycdev_fops);
+        cdev_add(&devices[i].dev, MKDEV(majorno, minorno + i), 1);
+        device_create(device_node_class, NULL, MKDEV(majorno, minorno + i), NULL, "mycdev%d", minorno + i);
+    }
+    
+    pr_info("INIT: Succeeded in registering %d %s devices\n\n", numdevices, MYDEV_NAME);
 	return 0;
 }
 
-static void __exit my_exit(void)
+static void __exit my_exit(void) 
 {
-	cdev_del(my_cdev);
-	unregister_chrdev_region(first, count);
-	pr_info("\nTristan Barber: device unregistered\n");
-	kfree(ramdisk);
+    for (int i = 0; i < numdevices; i++) {
+        device_destroy(device_node_class, MKDEV(majorno, minorno + i));
+        cdev_del(&devices[i].dev);
+        kfree(devices[i].ramdisk);
+    }
+ 
+    class_destroy(device_node_class);
+    unregister_chrdev_region(MKDEV(majorno,minorno), numdevices);
+    kfree(devices);
+
+    pr_info("EXIT: Succeeded in unregistering %d %s devices\n\n", numdevices, MYDEV_NAME);
 }
 
 module_init(my_init);
