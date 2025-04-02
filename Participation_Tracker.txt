@@ -27,3 +27,7 @@ Week 9 (March 10th - March 16th)
 Week 11 (March 24th - March 30th)
 -March 29th, emailed asking for clarification about what the container_of macro was doing in the scull driver, because I was confused
     about what exactly the process was regarding the custom device structure.
+    
+Week 12 (March 31st - April 6th)
+-April 1st, emailed to ask about how the in class activities are factored into the final grade. Was told that they count toward the 
+    5% participation category.
