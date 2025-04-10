@@ -99,92 +99,68 @@ void testCase2() {
 }
 
 /* Test Case 3 *********************************************************************/
-void *testCase3ReadThread(void *arg) {
-    // initial write so that there is data to read
-    write(fdTest3, "Initial Write", 13);
-
-    char buffer[1024];
-    ssize_t ret;
-    while(1) {
-        printf("Read Thread: Reading from device\n");
-        ret = read(fdTest3, buffer, 1024);
-        if (ret < 0) {
-            perror("Read failed");
-            return NULL;
-        }
-        usleep(100);
-    }
-    return NULL;
-}
-void *testCase3IoctlThread(void *arg) {
-    while(1) {
-        printf("Ioctl Thread: switching to MODE1\n");
-        if (ioctl(fdTest3, E2_IOCMODE1, 0) < 0) {
-            perror("Failed to switch to MODE1");
-            return NULL;
-        }
-        usleep(100);
-
-        printf("Ioctl Thread: switching to MODE2\n");
-        if (ioctl(fdTest3, E2_IOCMODE2, 0) < 0) {
-            perror("Failed to switch to MODE2");
-            return NULL;
-        }
-        usleep(100);
-    }
-    return NULL;
-}
-
-int testCase3() {
-    printf("Beginning test case 3 - NOTE THAT IF PRINTS STOP OCCURING, THAT MEANS DEADLOCK HAPPENED\n");
+void* testCase3Thread(void* arg) {
+    printf("Test Case 3: Entered thread.\n");
     sleep(3);
-    pthread_t testCase3Read, testCase3Ioctl;
-    
-    // Open the device
-    printf("Test Case 3: Opening device\n");
-    fdTest3 = open(DEVICE, O_RDWR);
-    if (fdTest3 < 0) {
-        perror("Error opening device");
-        return 1;
-    }
 
-    // Create threads
-    printf("Test Case 3: Spawning threads\n");
-    if (pthread_create(&testCase3Read, NULL, testCase3ReadThread, NULL) != 0)
-    if (pthread_create(&testCase3Ioctl, NULL, testCase3IoctlThread, NULL) != 0)
+    printf("Test Case 3 Thread: Opening device\n");
+    int fd = open(DEVICE, O_RDWR);
 
-    // Wait for threads to finish
-    pthread_join(testCase3Read, NULL);
-    pthread_join(testCase3Ioctl, NULL);
+    printf("Test Case 3 Thread: Executing Ioctl switch to MODE1\n");
+    ioctl(fd, E2_IOCMODE1);
 
-    close(fdTest3);
-    return 0;
+    printf("Test Case 3 Thread: Closing device\n");
+    close(fd);
 }
 
+void testCase3() {
+    printf("Test case 3\n");
+    pthread_t testCase3t;
+
+    printf("Test case 3: creating thread\n");
+    pthread_create(&testCase3t, NULL, testCase3Thread, NULL);
+
+    printf("Test case 3: Opening in main thread and switching to MODE2\n");
+    int fd = open(DEVICE, O_RDWR);
+    ioctl(fd, E2_IOCMODE2);
+
+    printf("Test case 3: Waiting on thread, this should ultimately cause the deadlock\n");
+    pthread_join(testCase3t, NULL);
+
+    printf("Test case 3: Reached end of function. Deadlock did not occur.\n");
+    close(fd);
+    return;
+}
 
 /* Test Case 4 *********************************************************************/
 void* testCase4Thread(void* arg) {
+    printf("Test case 4: Inside first thread, opening driver in MODE1\n");
     int fd = open(DEVICE, O_RDWR);
     if (fd < 0) {
         perror("Test case 4 failed to open");
     }
 
-    pause(); // Simulate device being open forever
+    printf("Test case 4: Opened driver successfully in thread\n");
+    close(fd);
+
     return NULL;
 }
 
 void testCase4() {
-    pthread_t t;
-    pthread_create(&t, NULL, testCase4Thread, NULL);
-    sleep(1);
+    pthread_t testCase4t;
+    pthread_create(&testCase4t, NULL, testCase4Thread, NULL);
 
-    printf("Test case 4: Attempting second open. Should cause deadlock.\n");
+    printf("Test case 4: Attempting second open\n");
     int fd = open(DEVICE, O_RDWR);
     if (fd < 0) {
         perror("Test case 4 failed to open");
     }
 
-    printf("Reached end of test case 4. Deadlock did not occur -- SHOULD NOT REACH HERE.\n");
+    printf("Test case 4: Now waiting on thread. This may cause the deadlock\n");
+    pthread_join(testCase4t, NULL);
+
+    close(fd);
+    printf("Reached end of test case 4. Deadlock did not occur.\n");
 }
 
 int main(int argc, char *argv[]) {
