@@ -5,6 +5,9 @@ Week 1 (January 13th-January 19th):
 Week 2 (January 20th-January 26th):
 -January 23rd, emailed to ask for output order clarification for assignment 1, 
     because order was different between instructions and sample output.
+    
+Week 3 (January 27th - Feb 2nd)
+-January 31st, completed and submitted in-class activity on system calls.
 
 Week 4 (Feb 3rd - Feb 9th)
 -Feb 6th, emailed to ask about assignment 2 language requirements. Clarified that the use of C++ is allowed as long as the 
@@ -13,6 +16,7 @@ Week 4 (Feb 3rd - Feb 9th)
 Week 6 (Feb 17th - Feb 23rd)
 -Feb 17th, emailed about a question regarding q2 on activity 2. Was wondering if there was a potential error condition if t1
     finished before t2 was able to join it.
+-Feb 17th, completed and submitted in class activity on multithreading.
 
 Week 8 (March 3rd - March 9th)
 -March 6th, emailed asking for clarification about boundary cases for file mapping using mmap. Wanted to know if a full page
@@ -23,6 +27,7 @@ Week 8 (March 3rd - March 9th)
 Week 9 (March 10th - March 16th)
 -March 13th, emailed asking what the final exam schedule will be for EDGE students. Confirmed that the final will be evening time, same 
     day as in-person final.
+-March 19th, completed and submitted in-class activity on device driver programming.
 
 Week 11 (March 24th - March 30th)
 -March 29th, emailed asking for clarification about what the container_of macro was doing in the scull driver, because I was confused
@@ -31,3 +36,7 @@ Week 11 (March 24th - March 30th)
 Week 12 (March 31st - April 6th)
 -April 1st, emailed to ask about how the in class activities are factored into the final grade. Was told that they count toward the 
     5% participation category.
+    
+Week 13 (April 7th - April 13th)
+-April 9th, emailed to request a final exam exception. EDGE students will take exam at 8:30PM on final exam date, but I asked to take the final 
+    during the regular final exam time.
