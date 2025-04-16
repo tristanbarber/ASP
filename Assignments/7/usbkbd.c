@@ -51,9 +51,10 @@
      150,158,159,128,136,177,178,176,142,152,173,140
  };
  
- // I added these for mode tracking
+ // I added these to make code cleaner
  #define MODE1 0
  #define MODE2 1
+ #define CAPS_LOCK 57
  
  /**
   * struct usb_kbd - state of each attached keyboard
@@ -139,7 +140,7 @@
                 input_report_key(kbd->dev, usb_kbd_keycode[kbd->new[i]], 1);
 
                 // check for caps lock and switch modes if need be
-                if (kbd->new[i] == 57) {
+                if (kbd->new[i] == CAPS_LOCK) {
                     kbd->caps_lock_keypress_counter++;
         
                     if (kbd->caps_lock_keypress_counter == 4) {
@@ -200,7 +201,7 @@ unsigned long flags;
         (!!test_bit(LED_CAPSL,   dev->led) << 1) |
         (!!test_bit(LED_NUML,    dev->led));
 
-    /* For MODE2: invert the Caps Lock LED bit (bit position 1) */
+    // need to invert the caps lock LED bit if we are in MODE2
     if (kbd->mode == MODE2)
         kbd->newleds ^= (1 << 1);
 
